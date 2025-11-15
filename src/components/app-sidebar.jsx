@@ -2,21 +2,18 @@
 
 import * as React from "react"
 import {
+  IconBrandSketch,
+  IconCalendar,
   IconCamera,
-  IconChartBar,
   IconDashboard,
-  IconDatabase,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
-  IconFolder,
-  IconHelp,
-  IconInnerShadowTop,
   IconListDetails,
+  IconPackage,
   IconReport,
-  IconSearch,
   IconSettings,
-  IconUsers,
+  IconShoppingCart,
 } from "@tabler/icons-react"
 
 import { NavDocuments } from "@/components/nav-documents"
@@ -35,36 +32,32 @@ import {
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "Admin",
+    email: "admin@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Categories",
+      url: "/dashboard/categories",
       icon: IconListDetails,
     },
     {
-      title: "Analytics",
-      url: "#",
-      icon: IconChartBar,
+      title: "Products",
+      url: "/dashboard/products",
+      icon: IconPackage,
     },
     {
-      title: "Projects",
-      url: "#",
-      icon: IconFolder,
-    },
-    {
-      title: "Team",
-      url: "#",
-      icon: IconUsers,
-    },
+      title: "Sales",
+      url: "/dashboard/sales",
+      icon: IconShoppingCart,
+    }
+    
   ],
   navClouds: [
     {
@@ -117,34 +110,24 @@ const data = {
   navSecondary: [
     {
       title: "Settings",
-      url: "#",
+      url: "/dashboard/settings",
       icon: IconSettings,
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "#",
-      icon: IconSearch,
-    },
+    }
   ],
   documents: [
     {
-      name: "Data Library",
-      url: "#",
-      icon: IconDatabase,
+      name: "Today Sale",
+      url: "/dashboard/reports/todaysale",
+      icon: IconCalendar,
     },
     {
-      name: "Reports",
-      url: "#",
+      name: "Weekly Sale",
+      url: "/dashboard/reports/weeklysale",
       icon: IconReport,
     },
     {
-      name: "Word Assistant",
-      url: "#",
+      name: "Monthly Sale",
+      url: "/dashboard/reports/monthlysale",
       icon: IconFileWord,
     },
   ],
@@ -160,8 +143,8 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
               <a href="#">
-                <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <IconBrandSketch className="!size-5" />
+                <span className="text-base font-semibold">CashFlow Inventory & POS</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
