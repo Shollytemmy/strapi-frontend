@@ -29,13 +29,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { useSession } from "next-auth/react"
 
 const data = {
-  user: {
-    name: "Admin",
-    email: "admin@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+ 
   navMain: [
     {
       title: "Dashboard",
@@ -132,19 +129,27 @@ const data = {
     },
   ],
 }
-
+ 
 export function AppSidebar({
   ...props
 }) {
+
+  const { data: session } = useSession();
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5"
+            >
               <a href="#">
                 <IconBrandSketch className="!size-5" />
-                <span className="text-base font-semibold">CashFlow Inventory & POS</span>
+                <span className="text-base font-semibold">
+                  CashFlow Inventory & POS
+                </span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -156,7 +161,7 @@ export function AppSidebar({
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {session?.user && <NavUser user={session.user} />}
       </SidebarFooter>
     </Sidebar>
   );
