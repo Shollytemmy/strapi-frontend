@@ -8,6 +8,8 @@ import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import axiosInstance from '@/lib/axios';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet } from '@/components/ui/sheet';
+import { New } from './features/New';
 
 const Page = () => {
   const [categories, setCategories] = useState([])
@@ -15,7 +17,9 @@ const Page = () => {
   const [meta, setMeta] = useState(null)
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
-  const [filters, setFilters] = useState({name: "", description: ""})
+  const [filters, setFilters] = useState({ name: "", description: "" })
+  const [sheetOpen, setSheetOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -38,7 +42,10 @@ const Page = () => {
     return query.toString()
   }
 
-  const columns = getColumns(filters, handleFilterChange);
+  const columns = getColumns(filters, handleFilterChange, (item) => {
+    setSelectedItem(item);
+    setSheetOpen(true)
+  });
 
   const fetchData = () => {
     setIsLoading(true)
@@ -83,7 +90,17 @@ const Page = () => {
           </CardDescription>
 
           <CardAction>
-            <Button>Add a new record</Button>
+            <Button onClick={() => {
+              setSelectedItem(null);
+              setSheetOpen(true);
+            }}>Add a new record</Button>
+
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+              <New item={selectedItem} isOpen={sheetOpen} onSuccess={() => {
+                setSheetOpen(false)
+                fetchData()
+              }} />
+            </Sheet>
           </CardAction>
         </CardHeader>
         <CardContent>
