@@ -4,12 +4,10 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,7 +18,6 @@ import { Textarea } from "@/components/ui/textarea";
 
 import {
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
@@ -72,7 +69,6 @@ export const New = ({ item = null, onSuccess, isOpen }) => {
       await axiosInstance.post('/api/categories', {data: values})
     }
 
-    // await axiosInstance.post('/api/categories', {data: values})
 
     if (onSuccess) onSuccess()
     

@@ -10,7 +10,7 @@ import { IconDotsVertical } from "@tabler/icons-react"
 
 export const getColumns = (filters, handleFilterChange, onEdit, onDelete) => [
   {
-    // id: 'name',
+   
     accessorKey: "name",
     header: () => (
       <ColumnFilter
@@ -24,7 +24,7 @@ export const getColumns = (filters, handleFilterChange, onEdit, onDelete) => [
     cell: (Info) => Info.getValue(),
   },
   {
-    // id: 'description',
+  
     accessorKey: "description",
     header: () => (
       <ColumnFilter
