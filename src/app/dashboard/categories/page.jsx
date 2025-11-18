@@ -40,41 +40,31 @@ const Page = () => {
 
   const columns = getColumns(filters, handleFilterChange);
 
+  const fetchData = () => {
+    setIsLoading(true)
 
-//   const data = [
-//   {
-//     id: "728ed52f",
-//     amount: 100,
-//     status: "pending",
-//   },
-//   {
-//     id: "489e1d42",
-//     email: "m@example.com",
-//     amount: 125,
-//     status: "processing",
-//     email: "example@gmail.com",
-//   },
-//   // ...
-// ]
+    axiosInstance
+      .get(`/api/categories?${buildQuery()}`)
+      .then((response) => {
+        const apiData = response.data.data.map((item) => ({
+          id: item.id,
+          name: item.name,
+          description: item.description,
+          documentId: item.documentId,
+        }));
+        setCategories(apiData);
+        setMeta(response.data.meta.pagination);
+      })
+      .catch((error) => {
+        console.log("Failed to fetch categories:", error);
+      })
+      .finally(() => setIsLoading(false));
+  }
 
-   useEffect(() => {
-     axiosInstance
-       .get(`/api/categories?${buildQuery()}`)
-       .then((response) => {
-         const apiData = response.data.data.map((item) => ({
-           id: item.id,
-           name: item.name,
-           description: item.description,
-           documentId: item.documentId,
-         }));
-         setCategories(apiData);
-         setMeta(response.data.meta.pagination);
-         
-       })
-       .catch((error) => {
-         console.log("Failed to fetch categories:", error);
-       })
-       .finally(() => setIsLoading(false));
+  useEffect(() => {
+     
+    fetchData()
+     
    // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [page, pageSize, filters]);
 
