@@ -8,7 +8,7 @@ import { IconDotsVertical } from "@tabler/icons-react"
 
 
 
-export const getColumns = (filters, handleFilterChange, onEdit) => [
+export const getColumns = (filters, handleFilterChange, onEdit, onDelete) => [
   {
     // id: 'name',
     accessorKey: "name",
@@ -57,7 +57,13 @@ export const getColumns = (filters, handleFilterChange, onEdit) => [
           
           >Edit</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => onDelete(row.original)
+             
+            }
+          >
+            Delete</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),

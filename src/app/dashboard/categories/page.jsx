@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react'
 import { DataTable } from './features/data-table';
-// import { columns } from './features/columns';
 import { getColumns } from './features/columns';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +9,7 @@ import axiosInstance from '@/lib/axios';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet } from '@/components/ui/sheet';
 import { New } from './features/New';
+import { toast } from 'sonner';
 
 const Page = () => {
   const [categories, setCategories] = useState([])
@@ -42,43 +42,68 @@ const Page = () => {
     return query.toString()
   }
 
-  const columns = getColumns(filters, handleFilterChange, (item) => {
-    setSelectedItem(item);
-    setSheetOpen(true)
-  });
+ const fetchData = () => {
+   setIsLoading(true);
 
-  const fetchData = () => {
-    setIsLoading(true)
+   axiosInstance
+     .get(`/api/categories?${buildQuery()}`)
+     .then((response) => {
+       const apiData = response.data.data.map((item) => ({
+         id: item.id,
+         name: item.name,
+         description: item.description,
+         documentId: item.documentId,
+       }));
+       setCategories(apiData);
+       setMeta(response.data.meta.pagination);
+     })
+     .catch((error) => {
+       console.log("Failed to fetch categories:", error);
+       toast.error("Failed to fetch categories");
+     })
+     .finally(() => setIsLoading(false));
+ };
 
-    axiosInstance
-      .get(`/api/categories?${buildQuery()}`)
-      .then((response) => {
-        const apiData = response.data.data.map((item) => ({
-          id: item.id,
-          name: item.name,
-          description: item.description,
-          documentId: item.documentId,
-        }));
-        setCategories(apiData);
-        setMeta(response.data.meta.pagination);
-      })
-      .catch((error) => {
-        console.log("Failed to fetch categories:", error);
-      })
-      .finally(() => setIsLoading(false));
-  }
+    useEffect(() => {
+      fetchData();
 
-  useEffect(() => {
-     
-    fetchData()
-     
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [page, pageSize, filters]);
-
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [page, pageSize, filters]);
+  
+      
   const handlePageSizeChange = (value) => {
-    setPageSize(Number(value))
-    setPage(1)
-   }
+    setPageSize(Number(value));
+    setPage(1);
+  };
+
+
+  
+  const handleDelete = async (item) => {
+
+    if (!confirm(`Are you sure you want to delete category "${item.name}"?`)) return;
+
+      try {
+        await axiosInstance.delete(`/api/categories/${item.documentId}`);
+        await fetchData();
+        toast.success("Category deleted successfully");
+      } catch (error) {
+        console.log("Failed to delete category:", error);
+        toast.error("Failed to delete category");
+      }
+  };
+
+  const columns = getColumns(
+    filters,
+    handleFilterChange,
+    (item) => {
+      setSelectedItem(item);
+      setSheetOpen(true);
+    },
+    handleDelete
+  );
+
+   
+
 
   return (
     <div className="py-4 md:py-6 px-4 lg:py-6">
