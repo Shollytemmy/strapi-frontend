@@ -31,7 +31,7 @@ const Page = () => {
     query.set('pagination[pageSize]', pageSize)
     query.set('populate[0]', 'category')
     query.set('populate[1]', 'image')
-    // check for filters and description
+    // check for filters and barcode
 
     if (filters.barcode) {
       query.set('filters[barcode][$eqi]', filters.barcode)
