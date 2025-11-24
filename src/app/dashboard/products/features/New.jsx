@@ -23,6 +23,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
+
+
 import {
   Select,
   SelectContent,
@@ -30,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -43,12 +44,17 @@ const formSchema = z.object({
 });
 import React from "react";
 import axiosInstance from "@/lib/axios";
-import { Loader2 } from "lucide-react";
+import { Loader2, UploadCloud, X } from "lucide-react";
+import Image from "next/image";
 
 export const New = ({ item = null, onSuccess, isOpen }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [categories, setCategories] = useState([])
   const [categoriesLoading, setCategoriesLoading] = useState(false)
+   const [uploading, setUploading] = useState(false);
+   const [uploadProgress, setUploadProgress] = useState(0);
+   const [imagePreview, setImagePreview] = useState(null);
+   const [imageId, setImageId] = useState(null);
   
 
     const form =
@@ -76,7 +82,15 @@ export const New = ({ item = null, onSuccess, isOpen }) => {
          description: item.description || "",
          category: item.category?.documentId || ''
        });
-     } else {
+        if (item.image) {
+        setImagePreview(item.image.url);
+        setImageId(item.image.id);
+      } else {
+        setImagePreview(null);
+        setImageId(null);
+      }
+    }
+      else {
        form.reset({
          name: "",
          price: 0,
@@ -85,7 +99,13 @@ export const New = ({ item = null, onSuccess, isOpen }) => {
          description: "",
           category: ''
        });
-     }
+
+           setImagePreview(null);
+           setImageId(null);
+
+       
+}
+     
    // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [item, isOpen]);
   
@@ -105,20 +125,62 @@ export const New = ({ item = null, onSuccess, isOpen }) => {
     if (isOpen) fetchCategories();
     
   }, [isOpen])
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("files", file);
+
+    setUploading(true);
+    setUploadProgress(0);
+
+    try {
+      const res = await axiosInstance.post("/api/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(percent);
+        },
+      });
+
+      const uploadedImage = res.data[0];
+      setImagePreview(uploadedImage.url);
+      setImageId(uploadedImage.id);
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      toast.error("Image upload failed");
+      console.log(error);
+    } finally {
+      setUploading(false);
+    }
+  };
       
   async function onSubmit(values) {
     setIsLoading(true)
 
     if (item?.id) {
-      await axiosInstance.put(`/api/products/${item.documentId}`, {
-        ...values,
-        category: values.category 
-      })
+      await axiosInstance.put(`/api/products/${item.documentId}`,
+        {
+          data: {
+            ...values,
+            category: values.category,
+            image: imageId
+          }
+        })
     } else {
-      await axiosInstance.post('/api/products', {
-        ...values,
-        category: values.category
-      })
+      await axiosInstance.post('/api/products',
+        {
+          data: {
+            ...values,
+            category: values.category,
+            image: imageId 
+          }
+        })
     }
 
 
@@ -140,7 +202,7 @@ export const New = ({ item = null, onSuccess, isOpen }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-8  px-6"
+          className="space-y-8  px-6 overflow-y-scroll pb-10"
         >
           <FormField
             control={form.control}
@@ -253,6 +315,53 @@ export const New = ({ item = null, onSuccess, isOpen }) => {
               </FormItem>
             )}
           />
+          <div className="space-y-2">
+            <FormLabel>Image</FormLabel>
+            {imagePreview && (
+              <div className="relative w-full max-w-xs">
+                <Image
+                  src={process.env.NEXT_PUBLIC_STRAPI_URL + imagePreview}
+                  alt="Product Preview"
+                  width={500}
+                  height={500}
+                  className="object-cover"
+                  unoptimized
+                />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImagePreview(null);
+                    setImageId(null);
+                  }}
+                  className="absolute top-1 right-1 bg-white/80 hover:bg-white p-1 rounded-full"
+                >
+                  <X className="h-4 w-4 text-red-500" />
+                </button>
+              </div>
+            )}
+
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-primary hover:underline">
+                <UploadCloud className="w-4 h-4" />
+                Upload image
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                  
+                />
+              </label>
+            </div>
+
+            {uploading && (
+              <div className="flex items-center gap-2 text-sm">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Uploading... {uploadProgress}%
+              </div>
+            )}
+          </div>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Saving Changes..." : "Save Changes"}
           </Button>
