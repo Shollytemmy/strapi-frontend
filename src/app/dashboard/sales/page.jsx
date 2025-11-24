@@ -47,6 +47,15 @@ const Page = () => {
       query.set('filters[customer_email][$containsi]', filters.customer_email)
     }
     
+     if (filters.date) {
+       const startOfDay = new Date(filters.date);
+       startOfDay.setUTCHours(0, 0, 0, 0);
+       const endOfDay = new Date(filters.date);
+       endOfDay.setUTCHours(24, 0, 0, 0);
+
+       query.set("filters[date][$gte]", startOfDay.toISOString());
+       query.set("filters[date][$lt]", endOfDay.toISOString());
+     }
    
 
     return query.toString()

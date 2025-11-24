@@ -70,6 +70,7 @@ export const getColumns = (filters, handleFilterChange, onEdit, onDelete) => [
         placeholder="Filter date..."
         value={filters.date || ""}
         onChange={(val) => handleFilterChange("date", val)}
+        type="date"
       />
     ),
 
@@ -98,8 +99,8 @@ export const getColumns = (filters, handleFilterChange, onEdit, onDelete) => [
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-32">
-          <DropdownMenuItem onClick={() => onEdit(row.original)}>
-            Edit
+          <DropdownMenuItem onClick={() => {}}>
+            Download Invoice
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
